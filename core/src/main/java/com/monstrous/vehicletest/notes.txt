@@ -1,0 +1,19 @@
+June 2023
+
+
+
+Added dependency on gdx-gtlf in build.gradle:
+
+  api "com.github.mgsx-dev.gdx-gltf:gltf:$gltfVersion"
+
+
+Added dependency on formic in build.gradle:
+
+  api "com.github.tommyettinger:formic:$formicVersion"
+
+  Add this in gradle.properties:
+    formicVersion=0.1.4
+
+
+Subfolder org.ode4j in core was copied wholesale and is not modified. Source: github antzGames/ode4j-GWT-Compatible-libGDX.
+
