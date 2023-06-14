@@ -9,8 +9,8 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Car {
 
-    public static float WHEEL_BASE = 3.24f; // as measured in Blender
-    public static float WHEEL_RADIUS = 0.4f;// as measured in Blender
+    public static float WHEEL_BASE = Settings.wheelForward + Settings.wheelBack;
+    public static float WHEEL_RADIUS = Settings.wheelRadius;
 
     public static int MAX_GEAR = 5;
     public static float MAX_RPM = 6000;

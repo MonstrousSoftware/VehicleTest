@@ -10,6 +10,8 @@ import com.monstrous.vehicletest.utils.Ode2GdxMathUtils;
 import org.ode4j.math.DQuaternion;
 import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
+import org.ode4j.ode.internal.DxBody;
+import org.ode4j.ode.internal.DxWorld;
 
 import static org.ode4j.ode.OdeConstants.*;
 
@@ -23,10 +25,6 @@ public class PhysicsWorld implements Disposable {
     private static final float DISABLE_THRESHOLD = 0.008f;
     private static final float DISABLE_STEPS = 10;
 
-
-//    private Array<DBody> bodies;
-//    private Array<DGeom> geoms;
-//    private Array<DJoint> joints;
     public DWorld world;
     public DSpace space;
     private DMass massInfo;
@@ -34,10 +32,6 @@ public class PhysicsWorld implements Disposable {
 
 
     public PhysicsWorld() {
-
-//        bodies = new Array<>();
-//        geoms = new Array<>();
-//        joints = new Array<>();
 
         OdeHelper.initODE2(0);
         world = OdeHelper.createWorld();
@@ -52,12 +46,21 @@ public class PhysicsWorld implements Disposable {
     }
 
 
+    public void remove( GameObject gameObject ) {
+        gameObject.body.destroy();
+        gameObject.geom.destroy();
+    }
+
+
     public void reset() {
+
         world.destroy();
         space.destroy();
         world = OdeHelper.createWorld();
         space = OdeHelper.createSapSpace( null, DSapSpace.AXES.XZY );
     }
+
+
 
 
     public void update(Array<GameObject> gameObjects) {
@@ -84,6 +87,10 @@ public class PhysicsWorld implements Disposable {
             if(instance != null ) {
                 instance.transform.set(q);
                 instance.transform.setTranslation(x, y, z);
+            }
+            if(go.scene != null && instance != go.scene.modelInstance) {
+                go.scene.modelInstance.transform.set(q);
+                go.scene.modelInstance.transform.setTranslation(x, y, z);
             }
 
             // disable bodies that have settled

@@ -1,10 +1,14 @@
 package com.monstrous.vehicletest;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import org.ode4j.ode.*;
 
@@ -18,31 +22,40 @@ public class World implements Disposable {
     private Car car;
     private Array<GameObject> gameObjects;
     private ModelBatch modelBatch;
-    private DWorld world;
-    private DSpace space;
     private GameFactory factory;
     private PhysicsWorld physicsWorld;
-    private CarView carView;
     public GameObject theCar;               // special game object
+    private Vector3 focusPosition;
     private DHinge2Joint[] joints;
+    private SceneManager sceneManager;
+    private SceneAsset sceneAsset;
 
-    public World(SceneManager sceneManager, Car car, CarView carView ) {
+    public World(SceneManager sceneManager, SceneAsset sceneAsset, Car car ) {
+        this.sceneManager = sceneManager;
+        this.sceneAsset = sceneAsset;
         this.car = car;
-        this.carView = carView;
+        focusPosition = new Vector3();
         showDebug = false;
         gameObjects = new Array<>();
         modelBatch = new ModelBatch();
 
         physicsWorld = new PhysicsWorld();
 
-        factory = new GameFactory(physicsWorld, sceneManager);
+        factory = new GameFactory(physicsWorld, sceneManager, sceneAsset);
         rebuild();
+
     }
 
     // can be called from GUI when settings have changed
     public void rebuild() {
-//        physicsWorld.reset();
-//        gameObjects.clear();
+        // delete all objects
+        for(GameObject go : gameObjects ) {
+            if (go.body != null)
+                physicsWorld.remove(go);
+            if(go.scene != null)
+                sceneManager.removeScene(go.scene);
+        }
+        gameObjects.clear();
 
 
         gameObjects.add( factory.makeGroundPlane() );
@@ -62,7 +75,8 @@ public class World implements Disposable {
             float z = 20+(float)Math.random();
             float y = 5 + 2*i;
 
-            GameObject go = factory.makeCylinder(1, 1, 0.3f, x, y, z);
+            //GameObject go = factory.makeCylinder(1, 1, 0.3f, x, y, z);
+            GameObject go = factory.makeTrafficCone(x, y, z);
             gameObjects.add(go);
         }
 
@@ -82,13 +96,14 @@ public class World implements Disposable {
         joints[1] = factory.makeWheelJoint(theCar, w1, true);
         joints[2] = factory.makeWheelJoint(theCar, w2, false);
         joints[3] = factory.makeWheelJoint(theCar, w3, false);
-        carView.setTransforms(theCar.instance.transform, w0.instance.transform, w1.instance.transform,
-                                w2.instance.transform, w3.instance.transform);
 
-        gameObjects.add( factory.makeArrows() );    // XYZ arrows
+        gameObjects.add( factory.makeArrows() );    // XYZ arrows, only in debug view
 
     }
 
+    public Vector3 getFocusPosition() {
+        return focusPosition;
+    }
 
     float speed = 0f;
     float steerAngle = 0.025f;
@@ -111,9 +126,13 @@ public class World implements Disposable {
             j2.getBody(1).enable();
         }
 
+        theCar.instance.transform.getTranslation(focusPosition); // for camera pointing
+
     }
 
     public void update( float deltaTime, CarController carController ) {
+        if(Gdx.input.isKeyPressed(Input.Keys.R))
+            rebuild();
 
         updateCar(carController, deltaTime);
         physicsWorld.update(gameObjects);

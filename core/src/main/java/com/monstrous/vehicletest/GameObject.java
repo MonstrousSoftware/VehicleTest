@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import net.mgsx.gltf.scene3d.scene.Scene;
 import org.ode4j.ode.DBody;
 import org.ode4j.ode.DGeom;
 import org.ode4j.ode.DJoint;
@@ -12,6 +13,7 @@ import org.ode4j.ode.DJoint;
 // game object has both a visual aspect (ModelInstance) and a physical aspect (DBody and DGeom)
 public class GameObject {
     public ModelInstance instance;
+    public Scene scene;
     public DBody body;
     public DJoint joint;
     public int disableSteps;    // counting steps of no movement before disabling this body

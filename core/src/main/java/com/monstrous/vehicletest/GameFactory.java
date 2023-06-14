@@ -1,7 +1,6 @@
 package com.monstrous.vehicletest;
 
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -13,7 +12,6 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.scene.Scene;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
@@ -21,9 +19,8 @@ import org.ode4j.math.DQuaternion;
 import org.ode4j.math.DVector3C;
 import org.ode4j.ode.*;
 
-// creates GameObjects
+// creates GameObjects and Joints
 
-// instances are added to SceneManager, useful? It ensures we have shadows.
 
 public class GameFactory implements Disposable {
 
@@ -33,17 +30,18 @@ public class GameFactory implements Disposable {
     private DMass massInfo;
     private Array<Disposable> disposables;
     private SceneManager sceneManager;
+    private SceneAsset sceneAsset;
 
-    public GameFactory(PhysicsWorld physicsWorld, SceneManager sceneManager) {
+    public GameFactory(PhysicsWorld physicsWorld, SceneManager sceneManager,  SceneAsset sceneAsset) {
         this.world = physicsWorld.world;
         this.space = physicsWorld.space;
         this.sceneManager = sceneManager;
+        this.sceneAsset = sceneAsset;
 
         massInfo = OdeHelper.createMass();
 
         modelBuilder = new ModelBuilder();
         disposables = new Array<>();
-
     }
 
     public GameObject makeSphere(float mass, float size, float x, float y, float z) {
@@ -65,8 +63,19 @@ public class GameFactory implements Disposable {
 
         ModelInstance instance = new ModelInstance(modelBall, x, y, z);
 
-        sceneManager.addScene(new Scene(instance));
+
         GameObject go = new GameObject(instance, body, sphere);
+        go.scene = new Scene(go.instance);
+        sceneManager.addScene(go.scene);
+        return go;
+    }
+
+
+    public GameObject makeTrafficCone( float x, float y, float z) {
+        GameObject go = buildBox(0.5f, 0.7f, 0.7f, 0.7f, x, y, z);
+        go.scene = new Scene(sceneAsset.scene, "trafficCone");
+        go.scene.modelInstance.transform.setTranslation(x, y, z);
+        sceneManager.addScene(go.scene);
         return go;
     }
 
@@ -78,7 +87,8 @@ public class GameFactory implements Disposable {
 
     public GameObject makeBox(float mass, float w, float h, float d, float x, float y, float z) {
         GameObject go = buildBox(mass, w, h, d, x, y, z);
-        sceneManager.addScene(new Scene(go.instance));
+        go.scene = new Scene(go.instance);
+        sceneManager.addScene(go.scene);
         return go;
     }
 
@@ -108,7 +118,8 @@ public class GameFactory implements Disposable {
 
     public GameObject makeCylinder(float mass, float radius, float height, float x, float y, float z) {
         GameObject go = buildCylinder(mass, radius, height, x, y, z);
-        sceneManager.addScene(new Scene(go.instance));
+        go.scene = new Scene(go.instance);
+        sceneManager.addScene(go.scene);
         return go;
     }
 
@@ -127,7 +138,7 @@ public class GameFactory implements Disposable {
             new Material(ColorAttribute.createDiffuse(Color.BLUE)),
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
 
-        cylinderTurn(model);
+        rotateMesh(model);
 
         disposables.add(model);
 
@@ -139,7 +150,7 @@ public class GameFactory implements Disposable {
     // LibGDX cylinder is oriented along Y axis,  ODE4j on Z axis
     // rotate mesh to match ODE definition of a cylinder with the main axis on Z instead of Y
     // this hard-codes the rotation into the mesh so that we can later use transforms as normal.
-    private void cylinderTurn(Model model){
+    private void rotateMesh(Model model){
         Vector3 v = new Vector3();
         Mesh mesh = model.meshes.first();
         int n = mesh.getNumVertices();
@@ -160,8 +171,8 @@ public class GameFactory implements Disposable {
         Model model = modelBuilder.createXYZCoordinates(10f, new Material(), VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorUnpacked);
         disposables.add(model);
         ModelInstance instance = new ModelInstance(model, new Vector3(0, 0, 0));
-        //sceneManager.addScene(new Scene(instance));
         GameObject go = new GameObject(instance, null, null);
+        go.scene = null;
         return go;
     }
 
@@ -175,8 +186,10 @@ public class GameFactory implements Disposable {
 
         disposables.add(modelFlat);
         ModelInstance instance = new ModelInstance(modelFlat, 0, -1, 0);    // 'table top' surface
-        sceneManager.addScene(new Scene(instance));
+
         GameObject go = new GameObject(instance, null, null);
+        go.scene = new Scene(go.instance);
+        sceneManager.addScene(go.scene);
         return go;
     }
 
@@ -187,7 +200,11 @@ public class GameFactory implements Disposable {
 
     public  GameObject makeChassis(float x, float y, float z) {
         // car pointing into z direction
-        return buildBox(50, 2.25f, 1.5f, 6, x, y, z);
+        GameObject go  = buildBox(Settings.chassisMass, Settings.chassisWidth, Settings.chassisHeight, Settings.chassisLength, x, y, z);
+
+        go.scene = new Scene(sceneAsset.scene, "Muscle 2");
+        sceneManager.addScene(go.scene);
+        return go;
     }
 
 
@@ -195,21 +212,31 @@ public class GameFactory implements Disposable {
     public  GameObject makeWheel(GameObject chassis, int index) {
         Vector3 chassisPos = new Vector3();
         chassis.instance.transform.getTranslation(chassisPos);
-        float dx = 1.3f;    // side
-        float dz = 1.7f;    // forward/back
-        float dy = -0.75f;   // down
+        float dx = Settings.wheelSide;    // side
+        float dy = Settings.wheelDown;   // down
+        float dz;
 
         if (index == 1 || index == 3) // right
             dx = -dx;
         if (index == 2 || index == 3) // rear
-            dz = -dz;
-        GameObject wheel = buildCylinder(1, .5f, .2f, chassisPos.x + dx, chassisPos.y + dy, chassisPos.z + dz);
+            dz = -Settings.wheelBack;
+        else
+            dz = Settings.wheelForward;
+        GameObject go = buildCylinder(Settings.wheelMass, Settings.wheelRadius, Settings.wheelWidth, chassisPos.x + dx, chassisPos.y + dy, chassisPos.z + dz);
 
         // turn cylinder axis from Z to X axis, as the car is oriented towards Z, and cylinder by default points to Z
         DQuaternion dq = new DQuaternion();
-        dq.set(DQuaternion.fromEulerDegrees(0, 90, 0));
-        wheel.body.setQuaternion(dq);
-        return wheel;
+        if (index == 1 || index == 3) // right
+            dq.set(DQuaternion.fromEulerDegrees(0, 90, 0));
+        else
+            dq.set(DQuaternion.fromEulerDegrees(0, -90, 0));
+        go.body.setQuaternion(dq);
+
+
+        go.scene = new Scene(sceneAsset.scene, "wheel");
+        sceneManager.addScene(go.scene);
+
+        return go;
     }
 
     public DHinge2Joint makeWheelJoint(GameObject chassis, GameObject wheel, boolean steering ){
@@ -225,8 +252,8 @@ public class GameFactory implements Disposable {
         joint.setParamVel2(0);
         joint.setParamFMax2(25f);
         joint.setParamFMax(25f);
-        joint.setParamSuspensionERP(0.99f);
-        joint.setParamSuspensionCFM(1e-9f);
+        joint.setParamSuspensionERP(Settings.suspensionERP);
+        joint.setParamSuspensionCFM(Settings.suspensionCFM);
         float maxSteer = MAX_STEER_ANGLE;
         if(!steering)  // rear wheel?
             maxSteer = 0f;

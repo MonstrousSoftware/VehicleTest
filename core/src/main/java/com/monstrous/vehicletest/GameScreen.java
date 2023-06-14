@@ -35,24 +35,22 @@ public class GameScreen extends ScreenAdapter {
     private CameraInputController camController;
     private CarController carController;
     private Car car;
-    private CarView carView;
     private GUI gui;
     private World world;
     private Vector3 tmpV = new Vector3();
 
     @Override
     public void show() {
-        // create scene
+        // load scene asset
         sceneManager = new SceneManager();
         sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/muscle2.gltf"));
-        //scene = new Scene(sceneAsset.scene);
-//        // extract some scenery items and add to scene manager
-//        scene = new Scene(sceneAsset.scene, "road");
-//        sceneManager.addScene(scene);
-//        scene = new Scene(sceneAsset.scene, "grassplane");
-//        sceneManager.addScene(scene);
-        scene = new Scene(sceneAsset.scene);
+
+        // extract some scenery items and add to scene manager
+        scene = new Scene(sceneAsset.scene, "road");
         sceneManager.addScene(scene);
+        scene = new Scene(sceneAsset.scene, "grassplane");
+        sceneManager.addScene(scene);
+
 
         // setup camera
         camera = new PerspectiveCamera(60f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -66,11 +64,8 @@ public class GameScreen extends ScreenAdapter {
 
         carController = new CarController();
         car = new Car(carController);
-        carView = new CarView(scene);
-        world = new World(sceneManager, car, carView);
+        world = new World(sceneManager, sceneAsset, car);
         gui = new GUI(car, world);
-
-
 
 
         camController = new CameraInputController(camera);
@@ -92,7 +87,7 @@ public class GameScreen extends ScreenAdapter {
         sceneManager.environment.set(new PBRFloatAttribute(PBRFloatAttribute.ShadowBias, 0.001f));
 
         // setup light
-        light = new DirectionalShadowLight(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE).setViewport(50,50,5,400);
+        light = new DirectionalShadowLight(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE).setViewport(100,100,5,400);
 
         light.direction.set(1, -3, 1).nor();
         light.color.set(Color.WHITE);
@@ -126,12 +121,11 @@ public class GameScreen extends ScreenAdapter {
 
         camController.update();
 
-        camera.direction.set(carView.getPosition()).sub(camera.position).nor();      // aim camera at car
+        camera.direction.set(world.getFocusPosition()).sub(camera.position).nor();      // aim camera at car
         camera.up.set(Vector3.Y);
         camera.update();
         car.update(deltaTime);
         world.update(deltaTime, carController);
-        carView.update(car);
 
         // render
         Gdx.gl.glClearColor(.2f,.6f,1,1);
