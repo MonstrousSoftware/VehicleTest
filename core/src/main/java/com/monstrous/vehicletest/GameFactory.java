@@ -199,18 +199,22 @@ public class GameFactory implements Disposable {
         float dz = 1.7f;    // forward/back
         float dy = -0.75f;   // down
 
-        if(index == 1 ||index == 3) // right
+        if (index == 1 || index == 3) // right
             dx = -dx;
-        if(index == 2 ||index == 3) // rear
+        if (index == 2 || index == 3) // rear
             dz = -dz;
-        GameObject wheel = buildCylinder(1, .5f, .2f, chassisPos.x+dx, chassisPos.y+dy, chassisPos.z+dz);
+        GameObject wheel = buildCylinder(1, .5f, .2f, chassisPos.x + dx, chassisPos.y + dy, chassisPos.z + dz);
 
         // turn cylinder axis from Z to X axis, as the car is oriented towards Z, and cylinder by default points to Z
         DQuaternion dq = new DQuaternion();
-        dq.set( DQuaternion.fromEulerDegrees(0, 90, 0));
+        dq.set(DQuaternion.fromEulerDegrees(0, 90, 0));
         wheel.body.setQuaternion(dq);
+        return wheel;
+    }
 
-        // hinge2joints for front wheels
+    public DHinge2Joint makeWheelJoint(GameObject chassis, GameObject wheel, boolean steering ){
+
+        // hinge2joints for wheels
         DHinge2Joint joint = OdeHelper.createHinge2Joint(world);    // add joint to the world
         DVector3C anchor = wheel.body.getPosition();
         joint.attach(chassis.body, wheel.body);
@@ -222,16 +226,14 @@ public class GameFactory implements Disposable {
         joint.setParamFMax2(25f);
         joint.setParamFMax(25f);
         joint.setParamSuspensionERP(0.99f);
-        joint.setParamSuspensionCFM(1e-7f);
+        joint.setParamSuspensionCFM(1e-9f);
         float maxSteer = MAX_STEER_ANGLE;
-        if(index >= 2)  // rear wheel?
+        if(!steering)  // rear wheel?
             maxSteer = 0f;
         joint.setParam(DJoint.PARAM_N.dParamLoStop1, -maxSteer);            // put a stop at max steering angle
         joint.setParam(DJoint.PARAM_N.dParamHiStop1, maxSteer);             // idem
 
-        wheel.joint = joint;        // bit hacky to store this in game object
-
-        return wheel;
+        return joint;
     }
 
 

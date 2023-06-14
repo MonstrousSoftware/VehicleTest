@@ -24,10 +24,9 @@ public class PhysicsWorld implements Disposable {
     private static final float DISABLE_STEPS = 10;
 
 
-
-    private Array<DBody> bodies;
-    private Array<DGeom> geoms;
-    private Array<DJoint> joints;
+//    private Array<DBody> bodies;
+//    private Array<DGeom> geoms;
+//    private Array<DJoint> joints;
     public DWorld world;
     public DSpace space;
     private DMass massInfo;
@@ -36,9 +35,9 @@ public class PhysicsWorld implements Disposable {
 
     public PhysicsWorld() {
 
-        bodies = new Array<>();
-        geoms = new Array<>();
-        joints = new Array<>();
+//        bodies = new Array<>();
+//        geoms = new Array<>();
+//        joints = new Array<>();
 
         OdeHelper.initODE2(0);
         world = OdeHelper.createWorld();
@@ -53,43 +52,15 @@ public class PhysicsWorld implements Disposable {
     }
 
 
+    public void reset() {
+        world.destroy();
+        space.destroy();
+        world = OdeHelper.createWorld();
+        space = OdeHelper.createSapSpace( null, DSapSpace.AXES.XZY );
+    }
 
-    float speed = 0f;
-    float steerAngle = 0.025f;
 
-    public void update(Array<GameObject> gameObjects) { //}, CarController carController, float deltaTime) {
-
-//        // Steering
-//        if(carController.leftPressed && steerAngle < MAX_STEER_ANGLE){
-//            steerAngle ++;
-//        }
-//        if(carController.rightPressed && steerAngle  > -MAX_STEER_ANGLE){
-//            steerAngle --;
-//        }
-//        // Throttle/Brake
-//        if(carController.forwardPressed && speed < MAX_SPEED) {
-//            speed += deltaTime;
-//        }
-//        else if(carController.backwardPressed && speed > 0) {   // braking
-//            speed -= 4* deltaTime;
-//        }
-//        else if(speed > 0) {  // coasting
-//            speed -= deltaTime;
-//        }
-//
-//        // rather specific to car joints
-//        for (int i = 0; i < joints.size; i++)  {
-//            DJoint j = joints.get(i);
-//            if(j instanceof DHinge2Joint) {
-//                DHinge2Joint j2 = (DHinge2Joint)j;
-//                double curturn = j2.getAngle1();
-//                j2.setParamVel((steerAngle - curturn) * 1.0f);
-//                j2.setParamVel2(speed);
-//            }
-//
-//            j.getBody(0).enable();
-//            j.getBody(1).enable();
-//        }
+    public void update(Array<GameObject> gameObjects) {
 
 
         space.collide (null,nearCallback);
@@ -112,13 +83,6 @@ public class PhysicsWorld implements Disposable {
 
             if(instance != null ) {
                 instance.transform.set(q);
-                // rotate to bridge ODE and LibGDX coordinate systems
-                // would be good to not do this per frame.
-                // noticable for cylinders, not for spheres and cubes
-//                if (geom instanceof DCylinder)
-//                    instance.transform.rotate(Vector3.X, 90);
-
-
                 instance.transform.setTranslation(x, y, z);
             }
 
@@ -126,7 +90,6 @@ public class PhysicsWorld implements Disposable {
             if(shouldDisable(go, body, i)) {
                 body.disable();
                 go.showSleeping();
-                //instance.materials.first().set(restingMaterial);
             }
         }
 

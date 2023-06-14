@@ -250,10 +250,10 @@
 			"name":"windows.001",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
-					0.09530749171972275,
-					0.11697071045637131,
-					0.18782080709934235,
-					1
+					0.04998793080449104,
+					0.15830697119235992,
+					0.18780972063541412,
+					0.10753647983074188
 				],
 				"metallicFactor":0,
 				"roughnessFactor":0.38860106468200684
@@ -289,9 +289,9 @@
 			"extensions":{
 				"KHR_materials_specular":{
 					"specularColorFactor":[
-						0,
-						0,
-						0
+						0.03686037632716298,
+						0.03686037632716298,
+						0.03686037632716298
 					]
 				},
 				"KHR_materials_ior":{
@@ -306,8 +306,7 @@
 					0.7912982106208801,
 					1
 				],
-				"metallicFactor":0.6580311059951782,
-				"roughnessFactor":0.1243523359298706
+				"roughnessFactor":0
 			}
 		},
 		{

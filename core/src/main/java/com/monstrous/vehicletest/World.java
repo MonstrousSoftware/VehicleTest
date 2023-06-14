@@ -24,6 +24,7 @@ public class World implements Disposable {
     private PhysicsWorld physicsWorld;
     private CarView carView;
     public GameObject theCar;               // special game object
+    private DHinge2Joint[] joints;
 
     public World(SceneManager sceneManager, Car car, CarView carView ) {
         this.car = car;
@@ -40,17 +41,20 @@ public class World implements Disposable {
 
     // can be called from GUI when settings have changed
     public void rebuild() {
+//        physicsWorld.reset();
+//        gameObjects.clear();
+
 
         gameObjects.add( factory.makeGroundPlane() );
 
         // create and position model instances
-//        for(int i = 0; i < 10; i++) {
-//            float x = (float)Math.random();
-//            float z = (float)Math.random();
-//            float y = 5 + 2*i;
-//            GameObject go = factory.makeCube(1, 1, x, y, z);
-//            gameObjects.add(go);
-//        }
+        for(int i = 0; i < 3; i++) {
+            float x = (float)Math.random();
+            float z = 30+(float)Math.random();
+            float y = 5 + 6*i;
+            GameObject go = factory.makeCube(50, 5, x, y, z);
+            gameObjects.add(go);
+        }
 
 
         for(int i = 0; i < 10; i++) {
@@ -73,6 +77,11 @@ public class World implements Disposable {
         gameObjects.add(w1);
         gameObjects.add(w2);
         gameObjects.add(w3);
+        joints = new DHinge2Joint[4];
+        joints[0] = factory.makeWheelJoint(theCar, w0, true);
+        joints[1] = factory.makeWheelJoint(theCar, w1, true);
+        joints[2] = factory.makeWheelJoint(theCar, w2, false);
+        joints[3] = factory.makeWheelJoint(theCar, w3, false);
         carView.setTransforms(theCar.instance.transform, w0.instance.transform, w1.instance.transform,
                                 w2.instance.transform, w3.instance.transform);
 
@@ -83,42 +92,25 @@ public class World implements Disposable {
 
     float speed = 0f;
     float steerAngle = 0.025f;
+    public static float STEER_SPEED = 10f;
 
     public void updateCar(CarController carController, float deltaTime) {
 
-        // Steering
-        if (carController.leftPressed && steerAngle < MAX_STEER_ANGLE) {
-            steerAngle++;
-        }
-        if (carController.rightPressed && steerAngle > -MAX_STEER_ANGLE) {
-            steerAngle--;
-        }
-        // Throttle/Brake
-        if (carController.forwardPressed && speed < MAX_SPEED) {
-            speed += deltaTime;
-        } else if (carController.backwardPressed && speed > 0) {   // braking
-            speed -= 4 * deltaTime;
-        } else if (speed > 0) {  // coasting
-            speed -= deltaTime;
-        }
 
-        // rather specific to car joints
-        for(GameObject go : gameObjects ) {
+        // joints chassis-wheel
+        for(int i = 0; i < 4; i ++ ) {
+            DHinge2Joint j2 = joints[i];
 
-            DJoint j = go.joint;
-            if(j == null)
-                continue;
-
-            if (j instanceof DHinge2Joint) {
-                DHinge2Joint j2 = (DHinge2Joint) j;
+            if( i < 2) {
                 double curturn = j2.getAngle1();
-                j2.setParamVel((steerAngle - curturn) * 1.0f);
-                j2.setParamVel2(speed);
+                j2.setParamVel((Math.toRadians(-car.steerAngle) - curturn) * 1.0f);      // ignored for non-steering wheels which are locked
             }
+            j2.setParamVel2(0.01f* car.driveShaftRPM);
 
-            j.getBody(0).enable();
-            j.getBody(1).enable();
+            j2.getBody(0).enable();
+            j2.getBody(1).enable();
         }
+
     }
 
     public void update( float deltaTime, CarController carController ) {
