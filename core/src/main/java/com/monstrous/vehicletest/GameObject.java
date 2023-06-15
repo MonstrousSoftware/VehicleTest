@@ -10,23 +10,21 @@ import org.ode4j.ode.DBody;
 import org.ode4j.ode.DGeom;
 import org.ode4j.ode.DJoint;
 
-// game object has both a visual aspect (ModelInstance) and a physical aspect (DBody and DGeom)
+// game object has both a visual aspect (Scene and ModelInstance) and a physical aspect (DBody and DGeom)
 public class GameObject {
-    public ModelInstance instance;
-    public Scene scene;
-    public DBody body;
-    public DJoint joint;
-    public int disableSteps;    // counting steps of no movement before disabling this body
-    public DGeom geom;
-    private static Material restingMaterial = null;   // material to show disabled bodies
+    public ModelInstance instance;      // model instance for debug view of geom
+    public Scene scene;                 // = GLTF 'model instance'
+    public DBody body;                  // rigid body
+    public DGeom geom;                  // collision geometry
+    public int disableSteps;            // number of steps of no movement, for disabling this body
+
+    private static Material restingMaterial = null;   // material to show disabled bodies (debug)
 
     public GameObject(ModelInstance instance, DBody body, DGeom geom) {
         this.instance = instance;
         this.body = body;
         this.geom = geom;
         disableSteps = 0;
-        joint = null;
-
     }
 
     // debug option: change colour to show object is asleep

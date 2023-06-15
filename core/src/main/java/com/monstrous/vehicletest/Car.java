@@ -25,7 +25,6 @@ public class Car {
     public int gear; // -1, 0, 1, 2, 3, ... MAX_GEAR
     public float gearRatio;
     public float steerAngle;
-    public float wheelTurnAngle;        // todo split per wheel
     public float driveShaftRPM;
     public boolean braking;
     public Matrix4 transform;           // for centre of mass
@@ -39,13 +38,14 @@ public class Car {
         rpm = 0;
         gear = 1;
         steerAngle = 0;
-        wheelTurnAngle = 0;
         braking = false;
         transform = new Matrix4();
         position = new Vector3();
     }
 
     public void update(float deltaTime ){
+
+        // perhaps should add automatic gear shifts....
 
         int gearShift = carController.getGearShift();
         if(gearShift > 0  && gear < MAX_GEAR)
@@ -84,12 +84,6 @@ public class Car {
         if(carController.rightPressed && steerAngle  > -MAX_STEER_ANGLE){
             steerAngle --;
         }
-
-        // rotate drive wheels
-        float wheelDelta = driveShaftRPM * deltaTime;
-        wheelTurnAngle += wheelDelta;
-
-        //moveCar(deltaTime);
 
     }
 

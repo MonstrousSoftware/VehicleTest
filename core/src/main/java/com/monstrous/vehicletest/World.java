@@ -14,8 +14,8 @@ import org.ode4j.ode.*;
 
 public class World implements Disposable {
 
-    private static float MAX_SPEED = 100f;
-    private static float MAX_STEER_ANGLE = (float) (0.2f*Math.PI);
+//    private static float MAX_SPEED = 100f;
+//    private static float MAX_STEER_ANGLE = (float) (0.2f*Math.PI);
 
 
     public boolean showDebug;
@@ -105,9 +105,6 @@ public class World implements Disposable {
         return focusPosition;
     }
 
-    float speed = 0f;
-    float steerAngle = 0.025f;
-    public static float STEER_SPEED = 10f;
 
     public void updateCar(CarController carController, float deltaTime) {
 
