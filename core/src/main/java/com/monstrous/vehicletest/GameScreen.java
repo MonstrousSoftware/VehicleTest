@@ -33,8 +33,7 @@ public class GameScreen extends ScreenAdapter {
     private SceneSkybox skybox;
     private DirectionalLightEx light;
     private CameraInputController camController;
-    private CarController carController;
-    private Car car;
+    private UserCarController carController;
     private GUI gui;
     private World world;
     private Vector3 tmpV = new Vector3();
@@ -54,18 +53,16 @@ public class GameScreen extends ScreenAdapter {
 
         // setup camera
         camera = new PerspectiveCamera(60f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        float d = 50f;
-        camera.near = 0.01f;
+        camera.near = 1f;
         camera.far = 1000f;
         camera.position.set(5, 4, -10);
-        camera.lookAt(0,0,0);
+        //camera.lookAt(0,0,0);
         sceneManager.setCamera(camera);
 
 
-        carController = new CarController();
-        car = new Car(carController);
-        world = new World(sceneManager, sceneAsset, car);
-        gui = new GUI(car, world);
+        carController = new UserCarController();
+        world = new World(sceneManager, sceneAsset, carController);
+        gui = new GUI(carController, world);
 
 
         camController = new CameraInputController(camera);
@@ -117,15 +114,18 @@ public class GameScreen extends ScreenAdapter {
 
     @Override
     public void render(float deltaTime) {
+        if(Gdx.input.isKeyPressed(Input.Keys.R))
+            world.rebuild();
+
         // animate camera
-
         camController.update();
-
         camera.direction.set(world.getFocusPosition()).sub(camera.position).nor();      // aim camera at car
         camera.up.set(Vector3.Y);
         camera.update();
-        car.update(deltaTime);
-        world.update(deltaTime, carController);
+
+
+
+        world.update( deltaTime );
 
         // render
         Gdx.gl.glClearColor(.2f,.6f,1,1);

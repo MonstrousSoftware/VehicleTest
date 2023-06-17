@@ -4,15 +4,14 @@ A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://git
 
 Vehicle physics test. Using ODE4j library rather than Bullet.
 Using gdx-gltf for the rendering and to read GLTF model files.
-
+HTML client using TeaVM extension.
 
 
 ## Platforms
 
 - `core`: Main module with the application logic shared by all platforms.
 - `lwjgl3`: Primary desktop platform using LWJGL3.
-- (`teavm`: Experimental web platform using TeaVM and WebGL. : to be done later, requires ODE4j adaptation)
-
+- `teavm`: Experimental web platform using TeaVM and WebGL.
 ## History
 
 This builds on VehicleDemo which used Bullet and gdx-gtlf and on VehicleODE which experimented with the ODE library.

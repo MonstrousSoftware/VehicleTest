@@ -24,4 +24,4 @@ Partly Done - tweak parameters in-game
 - more advanced simulation, e.g. wheel slippage
 - sound
 - collision shapes to match blender models (work flow)
-
+Done - multiple cars (AI controlled)

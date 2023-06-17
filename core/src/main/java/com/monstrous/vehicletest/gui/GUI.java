@@ -8,15 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.monstrous.vehicletest.Car;
-import com.monstrous.vehicletest.BWorld;
+import com.monstrous.vehicletest.UserCarController;
 import com.monstrous.vehicletest.World;
 
 public class GUI implements Disposable {
 
     private Skin skin;
     public Stage stage;
-    private Car car;
+    private UserCarController carController;
     private Label rpmValue;
     private Label gearValue;
     private Label steerAngleValue;
@@ -24,9 +23,9 @@ public class GUI implements Disposable {
     private float timer = 0;
     private CarSettingsWindow settingsWindow;
 
-    public GUI(Car car, World world ) {
+    public GUI(UserCarController carController, World world ) {
         Gdx.app.log("GUI constructor", "");
-        this.car = car;
+        this.carController = carController;
         skin = new Skin(Gdx.files.internal("Particle Park UI Skin/Particle Park UI.json"));
         stage = new Stage(new ScreenViewport());
 
@@ -73,15 +72,15 @@ public class GUI implements Disposable {
     private void update( float deltaTime ){
         timer -= deltaTime;
         if(timer <= 0) {
-            rpmValue.setText((int)car.rpm);
-            steerAngleValue.setText((int) car.steerAngle);
-            car.transform.getTranslation(tmpVec);
-            if(car.gear == -1)
+            //rpmValue.setText((int)car.rpm);
+            steerAngleValue.setText((int) carController.steerAngle);
+            //car.transform.getTranslation(tmpVec);
+            if(carController.gear == -1)
                 gearValue.setText("R");
-            else if(car.gear == 0)
+            else if(carController.gear == 0)
                 gearValue.setText("N");
             else
-                gearValue.setText(car.gear);
+                gearValue.setText(carController.gear);
             timer = 0.25f;
         }
     }
