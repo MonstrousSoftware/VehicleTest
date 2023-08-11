@@ -42,7 +42,8 @@ public class GameScreen extends ScreenAdapter {
     public void show() {
         // load scene asset
         sceneManager = new SceneManager();
-        sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/muscle2.gltf"));
+        //sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/muscle2.gltf"));
+        sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/ford-mustang-fastback-1968.gltf"));
 
         // extract some scenery items and add to scene manager
         scene = new Scene(sceneAsset.scene, "road");
@@ -132,7 +133,9 @@ public class GameScreen extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         sceneManager.update(deltaTime);
-        sceneManager.render();
+
+        if(!world.showDebug)
+            sceneManager.render();
 
         world.renderDebug(camera, sceneManager.environment);
 
