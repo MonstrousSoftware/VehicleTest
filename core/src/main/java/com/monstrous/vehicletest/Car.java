@@ -3,7 +3,8 @@ package com.monstrous.vehicletest;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import org.ode4j.ode.DHinge2Joint;
+import com.github.antzGames.gdx.ode4j.ode.DHinge2Joint;
+//import org.ode4j.ode.DHinge2Joint;
 
 
 // captures car state and behaviour

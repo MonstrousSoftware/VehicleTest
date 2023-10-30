@@ -5,4 +5,5 @@ dependencies {
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
   api "com.github.mgsx-dev.gdx-gltf:gltf:$gltfVersion"
   api "com.github.tommyettinger:formic:$formicVersion"
+  api "com.github.antzGames:gdx-ode4j:master-SNAPSHOT"
 }

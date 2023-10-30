@@ -5,10 +5,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.github.antzGames.gdx.ode4j.ode.DBody;
+import com.github.antzGames.gdx.ode4j.ode.DGeom;
 import net.mgsx.gltf.scene3d.scene.Scene;
-import org.ode4j.ode.DBody;
-import org.ode4j.ode.DGeom;
-import org.ode4j.ode.DJoint;
 
 // game object has both a visual aspect (Scene and ModelInstance) and a physical aspect (DBody and DGeom)
 public class GameObject {

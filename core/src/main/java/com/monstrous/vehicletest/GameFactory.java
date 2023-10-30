@@ -12,12 +12,13 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.github.antzGames.gdx.ode4j.math.DQuaternion;
+import com.github.antzGames.gdx.ode4j.math.DVector3C;
+import com.github.antzGames.gdx.ode4j.ode.*;
 import net.mgsx.gltf.scene3d.scene.Scene;
 import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
-import org.ode4j.math.DQuaternion;
-import org.ode4j.math.DVector3C;
-import org.ode4j.ode.*;
+
 
 // creates GameObjects and Joints
 

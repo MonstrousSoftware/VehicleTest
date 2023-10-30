@@ -18,4 +18,10 @@ This builds on VehicleDemo which used Bullet and gdx-gtlf and on VehicleODE whic
 
 ## Notes
 
-I copied the org.ode4j folder into core/src/main/java. (Copied from antzGames/ode4j-GWT-Compatible-libGDX). Could this be done by linking to a library instead? 
+~~I copied the org.ode4j folder into core/src/main/java. . Could this be done by linking to a library instead?~~ 
+
+30/10/2023: 
+- Replaced the copied org.ode4j (Copied from antzGames/ode4j-GWT-Compatible-libGDX) by linking in the gradle build script to
+   api "com.github.antzGames:gdx-ode4j:master-SNAPSHOT"
+- Updated to libgdx 1.12 and gdx-teavm 1.0.0-b6 to solve run-time errors.
+

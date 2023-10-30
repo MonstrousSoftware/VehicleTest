@@ -6,14 +6,11 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import com.github.antzGames.gdx.ode4j.math.DVector3C;
+import com.github.antzGames.gdx.ode4j.ode.*;
 import com.monstrous.vehicletest.utils.Ode2GdxMathUtils;
-import org.ode4j.math.DQuaternion;
-import org.ode4j.math.DVector3C;
-import org.ode4j.ode.*;
-import org.ode4j.ode.internal.DxBody;
-import org.ode4j.ode.internal.DxWorld;
 
-import static org.ode4j.ode.OdeConstants.*;
+import static com.github.antzGames.gdx.ode4j.ode.OdeConstants.*;
 
 
 // World of rigid body dynamics and collisions

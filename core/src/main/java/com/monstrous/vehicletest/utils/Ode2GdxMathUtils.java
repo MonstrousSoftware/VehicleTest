@@ -1,8 +1,9 @@
 package com.monstrous.vehicletest.utils;
 
 import com.badlogic.gdx.math.Quaternion;
-import org.ode4j.math.DMatrix3C;
-import org.ode4j.math.DQuaternionC;
+import com.github.antzGames.gdx.ode4j.math.DMatrix3C;
+import com.github.antzGames.gdx.ode4j.math.DQuaternionC;
+
 
 public class Ode2GdxMathUtils {
 
