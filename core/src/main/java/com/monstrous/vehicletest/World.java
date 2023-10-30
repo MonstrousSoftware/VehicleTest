@@ -83,7 +83,7 @@ public class World implements Disposable {
         }
 
         theCar = new Car(userCarController);
-        buildCar(theCar, 4,3,0);
+        buildCar(theCar, 14,3,0);
         cars.add(theCar);
 
         Car car = new Car(new CarController());

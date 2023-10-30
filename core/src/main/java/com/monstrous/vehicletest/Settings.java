@@ -9,17 +9,17 @@ public class Settings {
     public static float wheelMass = 1f;
 
     // geometry
-    public static float chassisWidth = 2.25f;
-    public static float chassisHeight = 1.5f;
+    public static float chassisWidth = 2.49f;
+    public static float chassisHeight = 1.36f;
     public static float chassisLength = 6f;
     // positioning of wheels
-    public static float wheelSide = 1.1f;
-    public static float wheelForward = 1.6f;    // as measured in Blender
-    public static float wheelBack = 1.6f;   // as measured in Blender
-    public static float wheelDown = -0.85f;
+    public static float wheelSide = 1.0f;
+    public static float wheelForward = 1.83f;    // as measured in Blender
+    public static float wheelBack = 1.84f;   // as measured in Blender
+    public static float wheelDown = -0.5f;
     // wheel dimensions
     public static float wheelWidth = 0.2f;
-    public static float wheelRadius = 0.4f; // as measured in Blender
+    public static float wheelRadius = 0.37f; // as measured in Blender
 
     public static float suspensionCFM = 0.14f;
     public static float suspensionERP = 0.8f;

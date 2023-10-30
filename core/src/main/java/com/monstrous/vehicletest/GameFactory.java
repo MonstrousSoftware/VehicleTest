@@ -73,7 +73,7 @@ public class GameFactory implements Disposable {
 
 
     public GameObject makeTrafficCone( float x, float y, float z) {
-        GameObject go = buildBox(0.5f, 0.7f, 0.7f, 0.7f, x, y, z);
+        GameObject go = buildCone(0.5f, 0.7f, 0.7f, 0.7f, x, y, z);
         go.scene = new Scene(sceneAsset.scene, "trafficCone");
         go.scene.modelInstance.transform.setTranslation(x, y, z);
         sceneManager.addScene(go.scene);
@@ -113,6 +113,56 @@ public class GameFactory implements Disposable {
 
         ModelInstance instance = new ModelInstance(modelBox, x, y, z);
         GameObject go = new GameObject(instance, body, box);
+        return go;
+    }
+
+    private GameObject buildCone(float mass, float w, float h, float d, float x, float y, float z) {
+        DBody body = OdeHelper.createBody(world);
+        body.setPosition(x, y, z);
+        massInfo.setBox(1, w, h, d);
+        massInfo.adjust(mass);    // mass
+        body.setMass(massInfo);
+        body.setAutoDisableDefaults();
+
+        Model model = modelBuilder.createCone(w, h, d, 4,
+            new Material(ColorAttribute.createDiffuse(Color.BLUE)),
+            VertexAttributes.Usage.Position );
+
+        disposables.add(model);
+        ModelInstance instance = new ModelInstance(model, x, y, z);
+
+        // convert LibGDX Model.Mesh to a TriMeshData for ODE4j
+        //
+        Mesh mesh = model.meshes.first();
+        int numVerts = mesh.getNumVertices();
+        int numIndices = mesh.getNumIndices();
+        float [] verts = new float[ numVerts * 3 ];
+        int [] indices = new int[ numIndices ];
+        short [] shortIndices = new short[ numIndices ];
+        mesh.getVertices(verts);
+        mesh.getIndices(shortIndices);
+        for(int i = 0; i < numIndices; i++) // convert short indices to int indices
+            indices[i] = shortIndices[i];
+
+        Vector3 v = new Vector3();
+        int stride = 3;
+        for(int i = 0 ; i < numVerts; i++) {
+            v.set(verts[i*stride], verts[i*stride+1], verts[i*stride+2]);
+            v.rotate(Vector3.Y, 45);
+            verts[i*stride] = v.x;
+            verts[i*stride+1] = v.y;
+            verts[i*stride+2] = v.z;
+        }
+
+        DTriMeshData triMeshData = OdeHelper.createTriMeshData();
+        triMeshData.build(verts, indices);
+        triMeshData.preprocess();
+        DGeom geom = OdeHelper.createTriMesh(space, triMeshData, null, null, null);
+        geom.setBody(body);
+
+
+
+        GameObject go = new GameObject(instance, body, geom);
         return go;
     }
 
@@ -181,7 +231,7 @@ public class GameFactory implements Disposable {
 
         OdeHelper.createPlane(space, 0, 1, 0, 0);
 
-        Model modelFlat = modelBuilder.createBox(40f, 1, 40f,
+        Model modelFlat = modelBuilder.createBox(40f, 2, 40f,
             new Material(ColorAttribute.createDiffuse(Color.OLIVE)),
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
 
@@ -203,7 +253,7 @@ public class GameFactory implements Disposable {
         // car pointing into z direction
         GameObject go  = buildBox(Settings.chassisMass, Settings.chassisWidth, Settings.chassisHeight, Settings.chassisLength, x, y, z);
 
-        go.scene = new Scene(sceneAsset.scene, "Muscle 2");
+        go.scene = new Scene(sceneAsset.scene, "car"); //"Muscle 2");
         sceneManager.addScene(go.scene);
         return go;
     }
