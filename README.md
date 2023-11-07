@@ -2,9 +2,13 @@
 
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/tommyettinger/gdx-liftoff).
 
+![screenshot](screenshot.png)
+
 Vehicle physics test. Using ODE4j library rather than Bullet.
 Using gdx-gltf for the rendering and to read GLTF model files.
 HTML client using TeaVM extension.
+
+Press WASD to drive. Arrow up/down to shift gears.
 
 
 ## Platforms
